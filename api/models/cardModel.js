@@ -3,34 +3,42 @@ const { Schema } = mongoose;
 
 const CardSchema = new Schema(
 	{
+		language: {
+			type: String,
+			required: 'Language required'
+		},
+		level: {
+			type: Number,
+			required: 'Level required'
+		},
 		targetWord: {
 			type: String,
-			required: 'Target word cannot be blank'
+			required: 'Target word required'
 		},
 		
 		englishWord: {
 			type: String,
-			required: 'English word cannot be blank'
+			required: 'English word required'
 		},
 
 		wordClass: {
 			type: String,
-			required: 'Word class cannot be blank'
+			required: 'Word class required'
 		},
 		
 		phraseStart: {
 			type: String,
-			required: 'Phrase start cannot be blank'
+			required: 'Phrase start required'
 		},
 		
 		phraseEnd: {
 			type: String,
-			required: 'Phrase end cannot be blank'
+			required: 'Phrase end required'
 		},
 
 		englishPhrase: {
 			type: String,
-			required: 'English phrase cannot be blank'
+			required: 'English phrase required'
 		}
 	},
 	{ collection: 'card' }
