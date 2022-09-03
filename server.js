@@ -23,7 +23,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('./api/models/userModel');
 
-app.post('/register', async (req, res) => {
+app.post('/user/register', async (req, res) => {
 	console.log(req.body)
 	try {
 		const newPassword = await bcrypt.hash(req.body.password, 10)
@@ -38,7 +38,7 @@ app.post('/register', async (req, res) => {
 	}
 })
 
-app.post('/login', async (req, res) => {
+app.post('/user/login', async (req, res) => {
 	console.log(req.body)
 	const user = await User.findOne({ 
 		email: req.body.email, 
@@ -54,7 +54,6 @@ app.post('/login', async (req, res) => {
 	const isPasswordValid = await bcrypt.compare(req.body.password, user.password)
 
 	if (isPasswordValid) {
-
 		const token = jwt.sign(
 			{
 				name: user.name,
@@ -69,41 +68,39 @@ app.post('/login', async (req, res) => {
 	}
 })
 
-app.get('/dashboard', async (req, res) => {
+app.get('/user/cards', async (req, res) => {
+	const token = req.headers['x-access-token']
 
+	try {
+		const decoded = jwt.verify(token, 'secret123')
+		const email = decoded.email
+		const user = await User.findOne(
+			{ email: email }
+		)
+
+		return res.json({ status: 'ok', cards: user.cards })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token' })
+	}
+})
+
+app.post('/user/cards', async (req, res) => {
 	const token = req.headers['x-access-token']
 
 	try {
 		const decoded = jwt.verify(token, 'secret123')
 		const email = decoded.email
 		await User.updateOne(
-			{ email: email }
+			{ email: email },
+			{ $set: { cards: req.body.cards } }
 		)
+		console.log(req.body.cards)
 
 		return res.json({ status: 'ok' })
 	} catch (error) {
 		console.log(error)
 		res.json({ status: 'error', error: 'invalid token' })
-	}
-
-	const user = await User.findOne({ 
-		email: req.body.email, 
-		password: req.body.password,
-	})
-
-	if (user) {
-
-		const token = jwt.sign(
-			{
-				name: user.name,
-				email: user.email,
-			}, 
-			'secret123'
-		)
-
-		return res.json({ status: 'ok', user: token })
-	} else {
-		return res.json({ status: 'error', user: false })
 	}
 })
 
