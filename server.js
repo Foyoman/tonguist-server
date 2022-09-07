@@ -59,7 +59,7 @@ app.post('/user/login', async (req, res) => {
 				name: user.name,
 				email: user.email,
 			}, 
-			'secret123'
+			process.env.SECRET
 		)
 
 		return res.json({ status: 'ok', user: token })
@@ -72,7 +72,7 @@ app.get('/user/cards', async (req, res) => {
 	const token = req.headers['x-access-token']
 
 	try {
-		const decoded = jwt.verify(token, 'secret123')
+		const decoded = jwt.verify(token, process.env.SECRET)
 		const email = decoded.email
 		const user = await User.findOne(
 			{ email: email }
@@ -89,13 +89,49 @@ app.post('/user/cards', async (req, res) => {
 	const token = req.headers['x-access-token']
 
 	try {
-		const decoded = jwt.verify(token, 'secret123')
+		const decoded = jwt.verify(token, process.env.SECRET)
 		const email = decoded.email
 		await User.updateOne(
 			{ email: email },
 			{ $set: { cards: req.body.cards } }
 		)
 		console.log(req.body.cards)
+
+		return res.json({ status: 'ok' })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token' })
+	}
+})
+
+app.get('/user/dates', async (req, res) => {
+	const token = req.headers['x-access-token']
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET)
+		const email = decoded.email
+		const user = await User.findOne(
+			{ email: email }
+		)
+
+		return res.json({ status: 'ok', dates: user.dates })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token' })
+	}
+})
+
+app.post('/user/dates', async (req, res) => {
+	const token = req.headers['x-access-token']
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET)
+		const email = decoded.email
+		await User.updateOne(
+			{ email: email },
+			{ $set: { dates: req.body.dates } }
+		)
+		console.log(req.body.dates)
 
 		return res.json({ status: 'ok' })
 	} catch (error) {

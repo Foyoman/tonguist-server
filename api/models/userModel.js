@@ -7,6 +7,7 @@ const User = new mongoose.Schema(
 		password: { type: String, required: true },
 		settings: { type: Array },
 		cards: { type: Array }, 
+		dates: { type: Array }
 	},
 	{ collection: 'user-data '}
 )
