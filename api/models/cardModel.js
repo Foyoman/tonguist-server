@@ -22,7 +22,7 @@ const CardSchema = new Schema(
 		},
 
 		wordClass: {
-			type: String,
+			type: Array,
 			required: 'Word class required'
 		},
 		
