@@ -7,7 +7,8 @@ const User = new mongoose.Schema(
 		password: { type: String, required: true },
 		settings: { type: Array },
 		cards: { type: Array }, 
-		dates: { type: Array }
+		dates: { type: Array },
+		language: { type: String }
 	},
 	{ collection: 'user-data '}
 )

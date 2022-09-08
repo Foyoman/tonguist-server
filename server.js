@@ -31,6 +31,7 @@ app.post('/user/register', async (req, res) => {
 			name: req.body.name,
 			email: req.body.email,
 			password: newPassword,
+			language: 'spanish' // TODO: allow users to pick the language they want to learn on signup
 		})
 		res.json({ status: 'ok' })
 	} catch (err) {
@@ -65,6 +66,42 @@ app.post('/user/login', async (req, res) => {
 		return res.json({ status: 'ok', user: token })
 	} else {
 		return res.json({ status: 'error', user: false })
+	}
+})
+
+app.get('/user/language', async (req, res) => {
+	const token = req.headers['x-access-token']
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET)
+		const email = decoded.email
+		const user = await User.findOne(
+			{ email: email }
+		)
+
+		return res.json({ status: 'ok', language: user.language })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token' })
+	}
+})
+
+app.post('/user/language', async (req, res) => {
+	const token = req.headers['x-access-token']
+
+	try {
+		const decoded = jwt.verify(token, process.env.SECRET)
+		const email = decoded.email
+		await User.updateOne(
+			{ email: email },
+			{ $set: { language: req.body.language } }
+		)
+		console.log(req.body.language)
+
+		return res.json({ status: 'ok' })
+	} catch (error) {
+		console.log(error)
+		res.json({ status: 'error', error: 'invalid token' })
 	}
 })
 
